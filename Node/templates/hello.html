@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Node GUI</title>
+    <link rel="stylesheet" href={{url_for('static',filename='tacit-css.min.css')}}/>
+</head>
+<body>
+<pre>
+    {{data}}
+</pre>
+<span>
+    <form action="/mine">
+    <button>Mine</button>
+    </form>
+    <form>
+        <input type="text" placeholder="to">
+        <input type="text" placeholder="amount">
+        <input type="submit" value="Transaction">
+    </form>
+    <span>
+        <input type="text" placeholder="id">
+        <button>Register</button>
+    </span>
+    <button>Resolve</button>
+</span>
+</body>
+</html>
