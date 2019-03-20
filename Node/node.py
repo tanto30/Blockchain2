@@ -3,50 +3,65 @@ from Node.blockchain import Chain
 from flask import Flask, render_template
 import matplotlib.pyplot as plt
 import networkx as nx
-class Node:
-    def __init__(self):
-        chain = Chain(int(uuid4()))
-
-
-app = Flask(__name__)
-chain = Chain(int(uuid4()))
+from Node.jsonaux import jsonify
 
 content_type = {'Content-Type': 'Application/json'}
 
+app = Flask(__name__)
 
 #### API ####
 
 @app.route('/')
 def main():
-    return chain.to_json(), 200, content_type
+    return jsonify(chain), 200, content_type
 
 
 @app.route('/mine')
 def mine():
     chain.mine()
-    return chain.to_json(), 200, content_type
-
+    return jsonify(chain), 200, content_type
 
 @app.route('/transaction/<to>/<amount>')
 def transaction(to, amount):
-    chain.new_transaction(to, amount)
-    return chain.to_json(), 200, content_type
+    chain.transaction(to, amount)
+    return jsonify(chain), 200, content_type
+
+
+@app.route('/resolve')
+def resolve():
+    chain.resolve()
+    return jsonify(chain), 200, content_type
+
+
+@app.route('/register/<id>')
+def register(id):
+    chain.register(id)
+    return jsonify(chain), 200, content_type
 
 #### UI ####
 
 @app.route('/ui')
 def ui():
-    return render_template("hello.html", data=chain.to_json())
+    return render_template("hello.html", data=jsonify(chain))
 
 
 @app.route('/graph')
 def graph():
-    G = chain.transaction_graph()
-    print(G.graph)
-    nx.draw(G)
+    G = chain.chain.transaction_graph()
+    nx.draw(G, with_labels=True)
     plt.savefig("static/img.png")
+    plt.close()
     return render_template("image.html")
 
 
+@app.after_request
+def add_header(response):
+    response.cache_control.no_cache = True
+    response.cache_control.no_store = True
+    response.cache_control.must_revalidate = True
+    return response
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=1222)
+    port = int(input())
+    chain = Chain(port)
+    app.run(host='0.0.0.0', port=port)

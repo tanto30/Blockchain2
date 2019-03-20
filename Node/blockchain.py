@@ -1,17 +1,9 @@
 from time import time
 from hashlib import sha256
-from json import dumps, loads, JSONEncoder
 import networkx as nx
-
-class CustomJSON(JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, set):
-            return list(obj)
-        return obj.__dict__
-
-
-def jsonify(obj):
-    return dumps(obj, sort_keys=True, cls=CustomJSON)
+import requests
+from Node.jsonaux import jsonify
+from json import loads
 
 
 class Block:
@@ -51,8 +43,8 @@ class Transaction:
 
 
 class Chain:
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, port):
+        self.port = port
         self.nodes = set()
         self.chain = [Block(0, "Genesis", [])]
         self.payments = []
@@ -64,20 +56,20 @@ class Chain:
         return len(self.chain)
 
     def to_json(self):
-        return dumps(self.__dict__, indent=4, cls=CustomJSON)
+        return jsonify(self)
 
     @staticmethod
-    def from_json(json):
+    def __from_json(json):
         res = Chain(0)
         res.__dict__ = loads(json)
         for i in range(len(res)):
             tmp = res.chain[i]
-            res.chain[i] = Block(0, 0)
+            res.chain[i] = Block(0, 0, [])
             res.chain[i].__dict__ = tmp
         return res
 
     def mine(self):
-        self.new_transaction(self.id, 1)
+        self.transaction(self.port, 1)
         self.chain.append(
             Block(
                 len(self.chain),
@@ -87,32 +79,27 @@ class Chain:
         )
         self.payments = []
 
-    def new_transaction(self, receiver, amount):
+    def transaction(self, receiver, amount):
         self.payments.append(
             Transaction(
-                self.id,
+                self.port,
                 receiver,
                 amount
             )
         )
 
-    def new_node(self, id):
-        self.nodes.add(id)
+    def register(self, port):
+        self.nodes.add(port)
 
-    def validate(self, chain):
-        return all(
-            [b.validate for b in chain.chain]
-        )
-
-    def resolve(self, chains):
+    def resolve(self):
+        nodes = self.__all_nodes()
         max_len = len(self.chain)
         new_chain = None
-        for chain in chains:
-            length = len(chain)
-            if length > max_len and self.validate(chain):
+        for node in nodes:
+            length = len(node)
+            if length > max_len and self.__validate(node):
                 max_len = length
-                new_chain = chain
-
+                new_chain = node.chain
         if new_chain:
             self.chain = new_chain
             return True
@@ -127,13 +114,23 @@ class Chain:
             G.add_edge(str(trans.sender), trans.receiver)
         return G
 
+    def __validate(self, chain):
+        return all(
+            [b.validate() for b in chain.chain]
+        )
+
+    def __all_nodes(self):
+        res = []
+        for port in self.nodes:
+            res.append(Chain.__from_json(requests.get("http://127.0.0.1:" + port).text))
+        return res
 
 
 if __name__ == '__main__':
     c1 = Chain(1)
     for i in range(10):
-        c1.new_block()
+        c1.mine()
     a = c1.to_json()
-    c2 = Chain.from_json(a)
+    c2 = Chain.__from_json(a)
     b = c2.to_json()
     assert a == b
