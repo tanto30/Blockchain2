@@ -1,7 +1,7 @@
 from time import time
 from hashlib import sha256
 from json import dumps, loads, JSONEncoder
-
+import networkx as nx
 
 class CustomJSON(JSONEncoder):
     def default(self, obj):
@@ -38,7 +38,6 @@ class Block:
         self.pow = 0
         while self.validate() is False:
             self.pow += 1
-        self.transactions.insert(0, Transaction("Mined", "me", 1))
 
     def validate(self):
         return self.hash().endswith("00")
@@ -77,7 +76,8 @@ class Chain:
             res.chain[i].__dict__ = tmp
         return res
 
-    def new_block(self):
+    def mine(self):
+        self.new_transaction(self.id, 1)
         self.chain.append(
             Block(
                 len(self.chain),
@@ -117,6 +117,16 @@ class Chain:
             self.chain = new_chain
             return True
         return False
+
+    def transaction_graph(self):
+        G = nx.DiGraph()
+        for block in self.chain:
+            for trans in block.transactions:
+                G.add_edge(trans.sender, trans.receiver)
+        for trans in self.payments:
+            G.add_edge(str(trans.sender), trans.receiver)
+        return G
+
 
 
 if __name__ == '__main__':
