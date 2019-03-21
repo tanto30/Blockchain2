@@ -5,6 +5,7 @@ from jsonaux import jsonify
 from blockchain import Chain
 from os import path
 import sys
+import logging
 
 content_type = {'Content-Type': 'Application/json'}
 
@@ -75,4 +76,4 @@ def add_header(response):
     return response
 
 
-app.run(host='0.0.0.0', port=port)
+app.run(host='127.0.0.1', port=port)
