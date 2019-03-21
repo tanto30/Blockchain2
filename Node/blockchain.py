@@ -2,7 +2,7 @@ from time import time
 from hashlib import sha256
 import networkx as nx
 import requests
-from Node.jsonaux import jsonify
+from jsonaux import jsonify
 from json import loads
 
 
@@ -68,6 +68,12 @@ class Chain:
             res.chain[i].__dict__ = tmp
         return res
 
+    @staticmethod
+    def __validate(chain):
+        return all(
+            [b.validate() for b in chain.chain]
+        )
+
     def mine(self):
         self.transaction(self.port, 1)
         self.chain.append(
@@ -106,31 +112,16 @@ class Chain:
         return False
 
     def transaction_graph(self):
-        G = nx.DiGraph()
+        g = nx.DiGraph()
         for block in self.chain:
             for trans in block.transactions:
-                G.add_edge(trans.sender, trans.receiver)
+                g.add_edge(trans.sender, trans.receiver)
         for trans in self.payments:
-            G.add_edge(str(trans.sender), trans.receiver)
-        return G
-
-    def __validate(self, chain):
-        return all(
-            [b.validate() for b in chain.chain]
-        )
+            g.add_edge(str(trans.sender), trans.receiver)
+        return g
 
     def __all_nodes(self):
         res = []
         for port in self.nodes:
             res.append(Chain.__from_json(requests.get("http://127.0.0.1:" + port).text))
         return res
-
-
-if __name__ == '__main__':
-    c1 = Chain(1)
-    for i in range(10):
-        c1.mine()
-    a = c1.to_json()
-    c2 = Chain.__from_json(a)
-    b = c2.to_json()
-    assert a == b
