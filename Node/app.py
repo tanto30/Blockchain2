@@ -5,7 +5,6 @@ from jsonaux import jsonify
 from blockchain import Chain
 from os import path
 import sys
-import logging
 
 content_type = {'Content-Type': 'Application/json'}
 
@@ -51,6 +50,10 @@ def register(id):
     chain.register(id)
     return jsonify(chain), 200, content_type
 
+
+@app.route('/nodes')
+def nodes():
+    return jsonify(chain.nodes), 200, content_type
 
 #### UI ####
 

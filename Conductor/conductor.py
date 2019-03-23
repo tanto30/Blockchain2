@@ -1,8 +1,9 @@
 from socket import socket
 from subprocess import Popen, CREATE_NEW_CONSOLE
-from queue import Queue, Empty
-from threading import Thread
-
+import requests
+import matplotlib.pyplot as plt
+import networkx as nx
+from json import loads
 
 def find_free_port():
     s = socket()
@@ -11,11 +12,6 @@ def find_free_port():
 
 
 processes = []
-
-# def enqueue_output(out, queue):
-#     for line in iter(out.readline, b''):
-#         queue.put(line)
-#     out.close()
 
 while (True):
     cmd = input()
@@ -26,22 +22,33 @@ while (True):
         num = int(cmd[1])
         for i in range(num):
             port = find_free_port()
-            # processes.append()
-            processes.append(Popen("python ../Node " + str(port), shell=True, creationflags=CREATE_NEW_CONSOLE))
-            # q = Queue()
-            # t = Thread(target=enqueue_output, args=(processes[i].stdout, q))
-            # t.daemon = True
-            # t.start()
-            print("Started node instance on port " + str(port))
-            # while True:
-            #     print(processes[i].stdout.readline())
+            proc = Popen("python ../Node " + str(port), creationflags=CREATE_NEW_CONSOLE)
+            proc.port = port
+            processes.append(proc)
+            print(f"Started node instance with PID {proc.pid} on Port {port}")
     elif cmd[0] == "stop":
         for process in processes:
-            process.terminate()
-    # elif cmd[0] == "debug":
-    #     try:
-    #         output = q.get_nowait()
-    #     except Empty:
-    #         pass
-    #     else:
-    #         print(output)
+            process.kill()
+        processes = []
+    elif cmd[0] == "mine":
+        for process in processes:
+            resp = requests.get("http://127.0.0.1:" + str(process.port) + "/mine")
+            print(f"PID:{process.pid},PORT:{process.port} - {resp.status_code}")
+    elif cmd[0] == "register_all":
+        for x in processes:
+            for y in processes:
+                if x.pid != y.pid:
+                    resp = requests.get(f"http://127.0.0.1:{x.port}/register/{y.port}")
+                    print(f"PID:{x.pid},PORT:{x.port} - {resp.status_code}")
+    elif cmd[0] == "knowledge_graph":
+        G = nx.DiGraph()
+        for x in processes:
+            resp = requests.get(f"http://127.0.0.1:{x.port}/nodes")
+            print(f"PID:{x.pid},PORT:{x.port} - {resp.status_code}")
+            resp = loads(resp.text)
+            for n in resp:
+                G.add_edge(x.port, int(n))
+            if not resp:
+                G.add_node(x.port)
+        nx.draw(G, with_labels=True)
+        plt.show()
