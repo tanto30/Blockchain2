@@ -5,15 +5,6 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from json import loads
 
-def find_free_port():
-    s = socket()
-    s.bind(('', 0))
-    port = s.getsockname()[1]
-    s.close()
-    return port
-
-processes = []
-
 
 class Process(Popen):
     def __init__(self, port):
@@ -27,32 +18,44 @@ class Process(Popen):
         print(f"PID:{self.pid}, PORT:{self.port} - {resp.status_code}")
         return resp
 
-while (True):
-    cmd = input()
-    cmd = [a.strip() for a in cmd.split()]
-    if not cmd:
-        continue
-    if cmd[0] == "run":
-        num = int(cmd[1])
+
+class Manager:
+    @staticmethod
+    def find_free_port():
+        s = socket()
+        s.bind(('', 0))
+        port = s.getsockname()[1]
+        s.close()
+        return port
+
+    def __init__(self):
+        self.processes = []
+
+    def run(self, num):
         for i in range(num):
-            port = find_free_port()
+            port = self.find_free_port()
             proc = Process(port)
-            processes.append(proc)
-    elif cmd[0] == "stop":
-        for process in processes:
-            process.kill()
-        processes = []
-    elif cmd[0] == "mine":
-        for process in processes:
-            process.send("/mine")
-    elif cmd[0] == "register_all":
-        for x in processes:
-            for y in processes:
+            self.processes.append(proc)
+
+    def stop(self):
+        for proc in self.processes:
+            proc.kill()
+        self.processes = []
+
+    def mine(self):
+        for proc in self.processes:
+            proc.send('/mine')
+
+    def register_all(self):
+        for x in self.processes:
+            for y in self.processes:
                 if x.pid != y.pid:
                     x.send(f"/register/{y.port}")
-    elif cmd[0] == "knowledge_graph":
+
+    def kgraph(self):
+        # knowledge graph
         G = nx.DiGraph()
-        for x in processes:
+        for x in self.processes:
             resp = x.send("/nodes")
             resp = loads(resp.text)
             for n in resp:
@@ -61,3 +64,18 @@ while (True):
                 G.add_node(x.port)
         nx.draw(G, with_labels=True)
         plt.show()
+
+
+class Parser:
+    def __init__(self):
+        pass
+
+    def loop(self):
+        while True:
+            cmd = input()
+            if not cmd: continue
+            self.parse(cmd)
+
+    def parse(self, cmd):
+        cmd = [a.strip() for a in cmd.split()]
+        naem = cmd[0]
