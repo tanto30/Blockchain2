@@ -16,8 +16,8 @@ else:
     templates = 'templates'
     statics = 'static'
 app = Flask(__name__, template_folder=templates, static_folder=statics)
-port = int(sys.argv[1])
-chain = Chain(port)
+# port = int(sys.argv[1])
+chain = Chain(5000)
 
 
 #### API ####
@@ -79,4 +79,4 @@ def add_header(response):
     return response
 
 
-app.run(host='127.0.0.1', port=port)
+app.run(host='127.0.0.1', port=5000)

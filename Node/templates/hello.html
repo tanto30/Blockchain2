@@ -1,12 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <link rel="script" href="{{url_for('static', filename='ui.js')}}">
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>Node GUI</title>
@@ -18,77 +14,77 @@
     <p class="lead">Here you can control the Node</p>
 </div>
 <div class="container">
-    <div class="card-deck mb-3 text-center">
-        <div class="card mb-4 box-shadow">
-            <div class="card-header">
-                <h4 class="my-0 font-weight-normal">Mine</h4>
-            </div>
-            <div class="card-body">
-                <p>Make your PC work hard in order to mine a new block for the blockchain network and gain 1 coin as a
-                    reward</p>
-                <form action="/mine" method="get" target="dummyframe">
-                    <input class="btn btn-primary" type="submit" value="Mine"/>
-                </form>
-            </div>
-        </div>
-        <div class="card mb-4 box-shadow">
-            <div class="card-header">
-                <h4 class="my-0 font-weight-normal">Transaction</h4>
-            </div>
-            <div class="card-body">
-                <form
-                ">
-                <div class="form-group">
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Receiver</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1"
-                               aria-describedby="emailHelp" placeholder="Send to">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Amount</label>
-                        <input type="password" class="form-control" id="exampleInputPassword1"
-                               placeholder="How much">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send</button>
-                </div>
-                </form>
-            </div>
-        </div>
-        <div class="card mb-4 box-shadow">
-            <div class="card-header">
-                <h4 class="my-0 font-weight-normal">Resolve</h4>
-            </div>
-            <div class="card-body">
-                <form action="/mine" method="get" target="dummyframe">
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Resolve</button>
-                    </div>
-                </form>
-            </div>
-        </div>
 
-        <div class="card mb-4 box-shadow">
-            <div class="card-header">
-                <h4 class="my-0 font-weight-normal">Register</h4>
+    <div class="card-deck">
+        <div class="card">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Mining</h5>
+                <p class="card-text">Make your PC work hard in order to find a POF and mine a block.
+                    Get rewarded with 1 coin</p>
+                <button class="btn btn-lg btn-block btn-primary mt-auto" id="mine">Mine</button>
             </div>
-            <div class="card-body">
-                <form action="/mine" method="get" target="dummyframe">
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+        <div class="card">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Transactions</h5>
+                <p class="card-text">Send money</p>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">To:</span>
                     </div>
-                </form>
+                    <input type="number" class="form-control" id="to">
+                </div>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Amount:</span>
+                    </div>
+                    <input type="number" class="form-control" id="amount">
+                </div>
+                <button class="btn btn-lg btn-block btn-primary mt-auto" id="transaction">Send</button>
+
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Resolving</h5>
+                <p class="card-text">A node can try to sync its chain with all the other known nodes in the network.
+                    This is done with an algorithm that decides which chain will become the main one. In this case it is
+                    the longest</p>
+                <button class="btn btn-lg btn-block btn-primary mt-auto" id="resolve">Resolve</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Registering</h5>
+                <p class="card-text">Register a new node to become known by this node</p>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Port:</span>
+                    </div>
+                    <input type="number" class="form-control">
+                </div>
+                <button class="btn btn-lg btn-block btn-primary mt-auto" id="register">Register</button>
             </div>
         </div>
     </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">pof</th>
+            <th scope="col">constraint</th>
+            <th scope="col">timestamp</th>
+            <th scope="col">transactions</th>
+        </tr>
+        </thead>
+        <tbody id="chain">
+        <tr>
+            <th scope="row"></th>
+        </tr>
+        </tbody>
+    </table>
 </div>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="{{url_for('static', filename='ui.js')}}"></script>
 </body>
 </html>
