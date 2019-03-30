@@ -1,23 +1,8 @@
 from socket import socket
-from subprocess import Popen, CREATE_NEW_CONSOLE
-import requests
 import matplotlib.pyplot as plt
 import networkx as nx
 from json import loads
-
-
-class Process(Popen):
-    def __init__(self, port):
-        super().__init__("python ../Node " + str(port), creationflags=CREATE_NEW_CONSOLE)
-        self.port = port
-        print(f"Started node instance with PID {self.pid} on Port {port}")
-        self.address = f"http://127.0.0.1:{port}"
-
-    def send(self, ep):
-        resp = requests.get(self.address + ep)
-        print(f"PID:{self.pid}, PORT:{self.port} - {resp.status_code}")
-        return resp
-
+from process import Process
 
 class Manager:
     @staticmethod
@@ -64,18 +49,3 @@ class Manager:
                 G.add_node(x.port)
         nx.draw(G, with_labels=True)
         plt.show()
-
-
-class Parser:
-    def __init__(self):
-        pass
-
-    def loop(self):
-        while True:
-            cmd = input()
-            if not cmd: continue
-            self.parse(cmd)
-
-    def parse(self, cmd):
-        cmd = [a.strip() for a in cmd.split()]
-        naem = cmd[0]
