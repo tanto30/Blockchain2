@@ -4,7 +4,7 @@ from cmd import Cmd
 
 class Parser(Cmd):
     intro = "Welcome to conductor. Use '?' command to get help"
-    prompt = 'Conductor > '
+    prompt = "Conductor > "
 
     def __init__(self):
         super(Parser, self).__init__()
@@ -15,8 +15,9 @@ class Parser(Cmd):
         Runs x instances of nodes
         :param arg: number of nodes to run
         '''
-        num = int(arg)
-        self.manager.run(num)
+        if arg.isdigit():
+            num = int(arg)
+            self.manager.run(num)
 
     def do_stop(self, arg):
         '''

@@ -62,7 +62,7 @@ def ui():
     return render_template("hello.html", data=jsonify(chain))
 
 
-@app.route('/graph')
+@app.route('/tgraph')
 def graph():
     G = chain.transaction_graph()
     nx.draw(G, with_labels=True)
