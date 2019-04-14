@@ -55,6 +55,11 @@ def register(id):
 def nodes():
     return jsonify(chain.nodes), 200, content_type
 
+
+@app.route('/balance')
+def balance():
+    return str(chain.balance()), 200, content_type
+
 #### UI ####
 
 @app.route('/ui')
@@ -66,7 +71,7 @@ def ui():
 def graph():
     G = chain.transaction_graph()
     nx.draw(G, with_labels=True)
-    plt.savefig(path.join(statics, "img.png"))
+    plt.savefig(path.join("Node", statics, "img.png"))
     plt.close()
     return render_template("image.html")
 

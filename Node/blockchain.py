@@ -89,8 +89,8 @@ class Chain:
         self.payments.append(
             Transaction(
                 self.port,
-                receiver,
-                amount
+                int(receiver),
+                int(amount)
             )
         )
 
@@ -110,6 +110,14 @@ class Chain:
             self.chain = new_chain
             return True
         return False
+
+    def balance(self):
+        res = 0
+        for b in self.chain:
+            for t in b.transactions:
+                if t.receiver == self.port:
+                    res += t.amount
+        return res
 
     def transaction_graph(self):
         g = nx.DiGraph()

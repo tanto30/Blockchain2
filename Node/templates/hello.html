@@ -10,12 +10,24 @@
 <body>
 
 <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <p class="lead">Balance: <span id="balance">0</span></p>
     <h1 class="display-4">Node GUI</h1>
     <p class="lead">Here you can control the Node</p>
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <label class="btn btn-secondary active" id="controlbtn">
+            <input type="radio" name="options" autocomplete="off" checked> Control Panel
+        </label>
+        <label class="btn btn-secondary" id="logsbtn">
+            <input type="radio" name="options" autocomplete="off"> Logs
+        </label>
+        <label class="btn btn-secondary" id="databtn">
+            <input type="radio" name="options" autocomplete="off"> Data
+        </label>
+    </div>
 </div>
 <div class="container">
 
-    <div class="card-deck">
+    <div class="card-deck" style="padding-bottom: 4%" id="control">
         <div class="card">
             <div class="card-body d-flex flex-column">
                 <h5 class="card-title">Mining</h5>
@@ -61,13 +73,13 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text">Port:</span>
                     </div>
-                    <input type="number" class="form-control">
+                    <input type="number" class="form-control" id="port">
                 </div>
                 <button class="btn btn-lg btn-block btn-primary mt-auto" id="register">Register</button>
             </div>
         </div>
     </div>
-    <table class="table">
+    <table class="table" id="data">
         <thead>
         <tr>
             <th scope="col">#</th>
@@ -83,8 +95,15 @@
         </tr>
         </tbody>
     </table>
+    <p id="logs"></p>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="{{url_for('static', filename='ui.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 </body>
 </html>
