@@ -37,6 +37,10 @@ let balance = document.getElementById('balance');
 
 $.ajax({url: '/', success: update});
 
+document.getElementById('control').hidden = false;
+document.getElementById('logs').hidden = true;
+document.getElementById('data').hidden = true;
+
 mine.addEventListener('click', () => {
     $.ajax({
         url: '/mine', success: update
@@ -45,22 +49,35 @@ mine.addEventListener('click', () => {
 });
 
 transaction.addEventListener('click', () => {
+    let to = document.getElementById('to').value;
+    let amount = document.getElementById('amount').value;
+    if (!to || !amount) {
+        log("Error: to and amount are required");
+        return;
+    }
     $.ajax({
-        url: '/transaction/' + document.getElementById('to').value +
-            '/' + document.getElementById('amount').value
+        url: '/transaction/' + to + '/' + amount
     });
+    log("Sent transaction request to " + to + " amount: " + amount);
 });
 
 register.addEventListener('click', () => {
+    let port = document.getElementById('port').value;
+    if (!port) {
+        log("Error: port is required");
+        return;
+    }
     $.ajax({
-        url: '/register/' + document.getElementById('port').value
+        url: port
     });
+    log("Registered node with port " + port);
 });
 
 resolve.addEventListener('click', () => {
     $.ajax({
         url: '/resolve'
     });
+    log("Sent resolve request");
 });
 
 controlbtn.addEventListener('click', () => {

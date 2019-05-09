@@ -43,5 +43,19 @@ class Parser(Cmd):
         '''
         self.manager.kgraph()
 
+    def do_resolve(self, arg):
+        '''
+        Demonstrates resolving algorithm by mining a block on all nodes
+        and another one on one of them then resolves
+        '''
+        self.manager.mine()
+        self.manager.mine_one()
+        self.manager.resolve()
 
+    def do_exit(self, arg):
+        '''
+        exit the CLI tool
+        '''
+        self.manager.stop()
+        exit(0)
 Parser().cmdloop()

@@ -49,3 +49,11 @@ class Manager:
                 G.add_node(x.port)
         nx.draw(G, with_labels=True)
         plt.show()
+
+    def mine_one(self):
+        if self.processes:
+            self.processes[0].send("/mine")
+
+    def resolve(self):
+        for x in self.processes:
+            x.send("/resolve")
