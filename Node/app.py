@@ -16,6 +16,9 @@ else:
     templates = 'templates'
     statics = 'static'
 app = Flask(__name__, template_folder=templates, static_folder=statics)
+if len(sys.argv) < 2:
+    print("Please provide port as cmd arg")
+    sys.exit(1)
 port = int(sys.argv[1])
 chain = Chain(port)
 

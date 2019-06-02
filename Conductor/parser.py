@@ -1,6 +1,6 @@
 from manager import Manager
 from cmd import Cmd
-
+from sys import exit
 
 class Parser(Cmd):
     intro = "Welcome to conductor. Use '?' command to get help"
@@ -58,4 +58,6 @@ class Parser(Cmd):
         '''
         self.manager.stop()
         exit(0)
+
+
 Parser().cmdloop()
